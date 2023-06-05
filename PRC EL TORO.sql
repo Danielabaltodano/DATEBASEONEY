@@ -21,15 +21,14 @@ CREATE PROCEDURE [dbo].[ConsultarConsumble]
 @dato varchar(50)
 AS
 BEGIN
-    SELECT consumibles.id_Consumible, producto.codigo, producto.nombre, producto.precio_compra, producto.descripcion, Cliente.Procedencia
+    SELECT consumibles.id_Consumible, producto.codigo, producto.nombre, producto.precio_compra, producto.descripcion, Consumibles.fecha_vencimiento
 	FROM Cliente 
-	INNER JOIN Persona ON Cliente.ID_Persona = Persona.ID_Persona
-	WHERE Cliente.ID_cliente LIKE '%'+RTRIM(@dato)+'%' 
-		OR Persona.Cedula LIKE '%'+RTRIM(@dato)+'%'
-		OR Persona.Nombre1 LIKE '%'+RTRIM(@dato)+'%'
-		OR Persona.Nombre2 LIKE '%'+RTRIM(@dato)+'%'
-		OR Persona.Apellido1 LIKE '%'+RTRIM(@dato)+'%'
-		OR Persona.Apellido2 LIKE '%'+RTRIM(@dato)+'%';
+	INNER JOIN Producto ON Consumibles.id_productos = Producto.id_producto
+	WHERE Consumibles.id_Consumible LIKE '%'+RTRIM(@dato)+'%' 
+		OR Producto.codigo LIKE '%'+RTRIM(@dato)+'%'
+		OR Producto.Nombre LIKE '%'+RTRIM(@dato)+'%'
+		OR Producto.precio_compra LIKE '%'+RTRIM(@dato)+'%'
+		OR Producto.descripcion LIKE '%'+RTRIM(@dato)+'%'
 END
 
 

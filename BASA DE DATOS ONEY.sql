@@ -3,15 +3,6 @@ CREATE DATABASE DB_ELTORO
 GO
 USE DB_ELTORO
 
-CREATE TABLE [producto] (
-  [id_producto] integer PRIMARY KEY,
-  [codigo] integer,
-  [nombre] varchar(15),
-  [precio_compra] decimal(4,2),
-  [descripcion] varchar(30)
-)
-GO
-
 CREATE TABLE [consumibles] (
   [id_Consumible] integer PRIMARY KEY,
   [id_producto] INT UNIQUE,
@@ -35,16 +26,10 @@ CREATE TABLE [Electronicos] (
 )
 GO
 
-CREATE TABLE [Detalle_Venta] (
-  [id_detalleventa] integer PRIMARY KEY,
-  [Cantidad] integer,
-  [Precio_venta] integer
-)
-GO
-
 CREATE TABLE [Venta] (
   [id_venta] integer PRIMARY KEY,
-  [fecha] integer
+  [fecha] integer,
+  Cod_consola int unique
 )
 GO
 
@@ -52,30 +37,53 @@ CREATE TABLE [Alquiler] (
   [Cod_consola] integer PRIMARY KEY,
   [Hora_inicio] TIME,
   [Hora_fin] TIME,
-  [Costo_Hora] integer
+  [Costo_Hora] integer,
+  id_venta int unique
 )
 GO
 
-ALTER TABLE [consumibles] ADD FOREIGN KEY ([fecha_vencimiento]) REFERENCES [producto] ([codigo])
+ALTER TABLE dbo.Venta
+ADD CONSTRAINT FK_Venta2_Alquileres
+FOREIGN KEY (Cod_consola)
+REFERENCES dbo.Alquiler(Cod_consola)
+
 GO
 
-ALTER TABLE [videojuegos] ADD FOREIGN KEY ([fecha_lanzamiento]) REFERENCES [producto] ([codigo])
+ALTER TABLE dbo.Alquiler
+ADD CONSTRAINT FK_Alquiler_Venta2
+FOREIGN KEY (id_venta)
+REFERENCES dbo.Venta(id_venta)
+
 GO
 
-ALTER TABLE [Electronicos] ADD FOREIGN KEY ([marca]) REFERENCES [producto] ([codigo])
+CREATE TABLE [producto] (
+  [id_producto] integer PRIMARY KEY,
+  [codigo] integer,
+  [nombre] varchar(15),
+  [precio_compra] decimal(4,2),
+  [descripcion] varchar(30),
+  id_Consumible int,
+  CONSTRAINT FK_Produco_Consu8 FOREIGN KEY (id_Consumible) REFERENCES consumibles (id_Consumible),
+  id_videojuegos int,
+  CONSTRAINT FK_Produco_ViJu FOREIGN KEY (id_videojuegos) REFERENCES videojuegos (id_videojuegos),
+  id_electronicos int,
+  CONSTRAINT FK_Produco_Consu9 FOREIGN KEY (id_electronicos) REFERENCES Electronicos (id_electronicos),
+) 
 GO
 
-ALTER TABLE [Detalle_Venta] ADD FOREIGN KEY ([Cantidad]) REFERENCES [videojuegos] ([fecha_lanzamiento])
+
+CREATE TABLE [Detalle_Venta] (
+  [id_detalleventa] integer PRIMARY KEY,
+  [Cantidad] integer,
+  [Precio_venta] integer,
+  id_Consumible int,
+  CONSTRAINT FK_Produco1_Consu FOREIGN KEY (id_Consumible) REFERENCES consumibles (id_Consumible),
+  id_videojuegos int,
+  CONSTRAINT FK_Produco2_ViJu FOREIGN KEY (id_videojuegos) REFERENCES videojuegos (id_videojuegos),
+  id_electronicos int,
+  CONSTRAINT FK_Produco3_Consu1 FOREIGN KEY (id_electronicos) REFERENCES Electronicos (id_electronicos),
+  id_venta int,
+  CONSTRAINT FK_venta_venta2 FOREIGN KEY (id_venta) REFERENCES Venta (id_venta),
+)
 GO
 
-ALTER TABLE [Venta] ADD FOREIGN KEY ([fecha]) REFERENCES [Detalle_Venta] ([Cantidad])
-GO
-
-ALTER TABLE [Alquiler] ADD FOREIGN KEY ([Cod_consola]) REFERENCES [Venta] ([fecha])
-GO
-
-ALTER TABLE [Detalle_Venta] ADD FOREIGN KEY ([Cantidad]) REFERENCES [consumibles] ([fecha_vencimiento])
-GO
-
-ALTER TABLE [Detalle_Venta] ADD FOREIGN KEY ([Cantidad]) REFERENCES [Electronicos] ([marca])
-GO

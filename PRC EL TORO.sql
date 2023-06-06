@@ -1,5 +1,5 @@
 
---------Prodecimiento Mostrar cliente---------
+--------Prodecimiento Mostrar consumible---------
 USE DB_ELTORO
 GO
 
@@ -16,13 +16,13 @@ END
 Exec MostrarConsumible;
 
 
---------------Prodecimiento Consultar cliente------------------
+--------------Prodecimiento Consultar consumible------------------
 CREATE PROCEDURE [dbo].[ConsultarConsumble]
 @dato varchar(50)
 AS
 BEGIN
     SELECT consumibles.id_Consumible, producto.codigo, producto.nombre, producto.precio_compra, producto.descripcion, Consumibles.fecha_vencimiento
-	FROM Cliente 
+	FROM Consumible
 	INNER JOIN Producto ON Consumibles.id_productos = Producto.id_producto
 	WHERE Consumibles.id_Consumible LIKE '%'+RTRIM(@dato)+'%' 
 		OR Producto.codigo LIKE '%'+RTRIM(@dato)+'%'
@@ -37,172 +37,157 @@ END
 
 
 
----------------------------Prodecimiento Crear Cliente-----------------------------------------
+---------------------------Prodecimiento Crear Consumibles-----------------------------------------
 
-USE [DB_HotelMilenio]
+USE [DB_ELTORO]
 GO
-CREATE PROCEDURE [dbo].[CrearCliente]
-    @Cedula VARCHAR(15),
-    @Nombre1 VARCHAR(15),
-    @Nombre2 VARCHAR(15),
-    @Apellido1 VARCHAR(15),
-    @Apellido2 VARCHAR(15),
-    @Procedencia VARCHAR(40),
-    @Telefono VARCHAR(8)
+CREATE PROCEDURE [dbo].[CrearConsumible]
+    @codigo VARCHAR(15),
+    @nombre VARCHAR(15),
+    @precio_compra VARCHAR(15),
+    @descripcion VARCHAR(15),
+	@fecha_vencimiento DATETIME
 AS
 BEGIN
-    INSERT INTO Persona(Cedula, Nombre1, Nombre2, Apellido1, Apellido2,  Telefono)
-    VALUES (@Cedula, @Nombre1, @Nombre2, @Apellido1, @Apellido2,  @Telefono)
-	INSERT INTO Cliente(ID_Persona ,Procedencia)
-	VALUES (SCOPE_IDENTITY(), @Procedencia)
+    INSERT INTO Producto(codigo, nombre, precio_compra, descripcion)
+    VALUES (@codigo, @nombre, @precio_compra, @descripcion)
+	INSERT INTO Consumible(id_producto ,fecha_vencimiento)
+	VALUES (SCOPE_IDENTITY(), @fecha_vencimiento)
 END
 
 
 
------------------------------Prodecimiento Modificar Cliente---------------------------------------------
-USE [DB_HotelMilenio]
+-----------------------------Prodecimiento Modificar Consumible---------------------------------------------
+USE [DB_ELTORO]
 GO
-CREATE PROCEDURE [dbo].[ModificarCliente]
-@ID_Persona INT,
-@Cedula VARCHAR(15),
-@Nombre1 VARCHAR(15),
-@Nombre2 VARCHAR(15),
-@Apellido1 VARCHAR(15),
-@Apellido2 VARCHAR(15),
-@Procedencia VARCHAR(40),
-@Telefono varchar(8)
+CREATE PROCEDURE [dbo].[ModificarConsumible]
+@id_producto INT,
+@codigo INT,
+@nombre VARCHAR(15),
+@precio_compra INT,
+@descripcion VARCHAR(15),
+@fecha_vencimiento DATETIME
 AS
 BEGIN
-UPDATE Persona SET
-    Cedula = @Cedula,
-    Nombre1 = @Nombre1,
-    Nombre2 = @Nombre2,
-    Apellido1 = @Apellido1,
-    Apellido2 = @Apellido2,
-    Telefono = @Telefono
-WHERE ID_Persona = @ID_Persona
-update Cliente set Procedencia= @Procedencia where ID_Persona=@ID_Persona
+UPDATE Producto SET
+    codigo = @codigo,
+    nombre = @nombre,
+    precio_compra = @precio_compra,
+    descripcion = @descripcion
+WHERE id_producto = @id_producto
+update Consumible set fecha_vencimiento= @fecha_vencimiento where id_producto = @id_producto
 END
 
----------------------------------Prodecimiento Eliminar cliente----------------------------------------
-USE [DB_HotelMilenio]
+---------------------------------Prodecimiento Eliminar consumible----------------------------------------
+USE [DB_ELTORO]
 GO
-CREATE PROCEDURE EliminarCliente
+CREATE PROCEDURE EliminarConsumible
     @dato varchar(50)
 	As 
 	Begin 
-	delete from Cliente where ID_Persona= @dato
-	delete from Persona where ID_Persona= @dato
+	delete from Consumible where id_producto= @dato
+	delete from Producto where id_producto= @dato
 
 End
 
--------------------Prodecimiento Insertar Empleado-------------------------------
-USE [DB_HotelMilenio]
-GO
-CREATE PROCEDURE [dbo].[CrearEmpleado]
-    @Nombre1 VARCHAR(15),
-    @Nombre2 VARCHAR(15),
-    @Apellido1 VARCHAR(15),
-    @Apellido2 VARCHAR(15),
-    @Telefono VARCHAR(8),
-	@Usuario VARCHAR(15),
-	@Contraseña VARCHAR(30)
-AS
-BEGIN
-    INSERT INTO Persona( Nombre1, Nombre2, Apellido1, Apellido2,  Telefono)
-    VALUES ( @Nombre1, @Nombre2, @Apellido1, @Apellido2,  @Telefono)
-	INSERT INTO Empleado(ID_Persona ,Usuario,Contraseña)
-	VALUES (SCOPE_IDENTITY(), @Usuario,@Contraseña)
-END
---------Procedimiento Mostrar Empleado---------
-USE DB_HotelMilenio
-GO
+-------------------Prodecimiento Insertar VideoJuego-------------------------------
 
-CREATE PROCEDURE MostrarEmpleados
+USE [DB_ELTORO]
+GO
+CREATE PROCEDURE [dbo].[CrearVideoJuego]
+    @codigo VARCHAR(15),
+    @nombre VARCHAR(15),
+    @precio_compra VARCHAR(15),
+    @descripcion VARCHAR(15),
+	@fecha_lanzamiento DATETIME,
+	@plataforma VARCHAR(15)
 AS
 BEGIN
-    SELECT P.ID_Persona,E.ID_Empleado, P.Nombre1, P.Nombre2, P.Apellido1, P.Apellido2, P.Telefono, E.Usuario,E.Contraseña
-    FROM Persona P
-    INNER JOIN Empleado E ON P.ID_Persona = E.ID_Persona;
+    INSERT INTO Producto(codigo, nombre, precio_compra, descripcion)
+    VALUES (@codigo, @nombre, @precio_compra, @descripcion)
+    INSERT INTO VideoJuegos(id_producto, fecha_lanzamiento, plataforma)
+    VALUES (SCOPE_IDENTITY(), @fecha_lanzamiento, @plataforma)
 END
 
-Exec MostrarEmpleados
-
-
-
---------------Procedimiento Consultar Empleado------------------
-USE DB_HotelMilenio
+--------Procedimiento Mostrar VideoJuego---------
+USE [DB_ELTORO]
 GO
 
-CREATE PROCEDURE ConsultarEmpleado
-@dato varchar(50)
+CREATE PROCEDURE MostrarVideoJuego
 AS
 BEGIN
-    SELECT Empleado.ID_Empleado, Persona.Nombre1, Persona.Nombre2, Persona.Apellido1, Persona.Apellido2, Persona.Telefono,Empleado.Usuario,Empleado.Contraseña
-	FROM Empleado
-	INNER JOIN Persona ON Empleado.ID_Persona = Persona.ID_Persona
-	WHERE Empleado.ID_Empleado LIKE '%'+RTRIM(@dato)+'%' 
-		OR Persona.Nombre1 LIKE '%'+RTRIM(@dato)+'%'
-		OR Persona.Nombre2 LIKE '%'+RTRIM(@dato)+'%'
-		OR Persona.Apellido1 LIKE '%'+RTRIM(@dato)+'%'
-		OR Persona.Apellido2 LIKE '%'+RTRIM(@dato)+'%';
+    SELECT P.id_producto, V.id_videojuegos, P.codigo, P.nombre, P.precio_compra, P.descripcion, V.fecha_lanzamiento, V.plataforma
+    FROM producto P
+    INNER JOIN videojuegos V ON P.id_producto = V.id_producto;
 END
 
+EXEC MostrarVideoJuego;
 
 
---------------------------------Procedimiento Actualizar empleado----------------------------------------------------
-USE [DB_HotelMilenio]
+
+
+--------------Procedimiento Consultar VideoJuego------------------
+USE [DB_ELTORO]
 GO
-CREATE PROCEDURE ModificarEmpleado
-@ID_Persona INT,
-@Nombre1 VARCHAR(15),
-@Nombre2 VARCHAR(15),
-@Apellido1 VARCHAR(15),
-@Apellido2 VARCHAR(15),
-@Telefono varchar(8),
-@Usuario VARCHAR (15),
-@Contraseña VARCHAR(30)
+
+CREATE PROCEDURE [dbo].[ConsultarVideoJuego]
+    @dato VARCHAR(50)
 AS
 BEGIN
-UPDATE Persona SET
-    Nombre1 = @Nombre1,
-    Nombre2 = @Nombre2,
-    Apellido1 = @Apellido1,
-    Apellido2 = @Apellido2,
-    Telefono = @Telefono
-WHERE ID_Persona = @ID_Persona
-UPDATE Empleado SET
-Usuario= @Usuario,
-Contraseña=@Contraseña
-
-WHERE ID_Persona=@ID_Persona
+    SELECT videojuegos.id_videojuegos, producto.codigo, producto.nombre, producto.precio_compra, producto.descripcion, videojuegos.fecha_lanzamiento, videojuegos.plataforma
+    FROM videojuegos
+    INNER JOIN Producto ON VideoJuegos.id_producto = Producto.id_producto
+    WHERE VideoJuegos.id_videojuegos LIKE '%'+RTRIM(@dato)+'%' 
+        OR Producto.codigo LIKE '%'+RTRIM(@dato)+'%'
+        OR Producto.Nombre LIKE '%'+RTRIM(@dato)+'%'
+        OR Producto.precio_compra LIKE '%'+RTRIM(@dato)+'%'
+        OR Producto.descripcion LIKE '%'+RTRIM(@dato)+'%'
 END
 
 
 
---------------------------------------------------------------
-USE [DB_HotelMilenio]
-GO
-CREATE PROCEDURE EliminarEmpleado
-    @dato varchar(50)
-	As 
-	Begin 
-	delete from Empleado where ID_Persona= @dato
-	delete from Persona where ID_Persona= @dato
 
-End
+--------------------------------Procedimiento Actualizar videojuegos----------------------------------------------------
+USE [DB_ELTORO]
+GO
+CREATE PROCEDURE [dbo].[ModificarVideoJuego]
+    @id_producto INT,
+    @codigo INT,
+    @nombre VARCHAR(15),
+    @precio_compra INT,
+    @descripcion VARCHAR(15),
+    @fecha_lanzamiento DATETIME,
+    @plataforma VARCHAR(15)
+AS
+BEGIN
+    UPDATE Producto SET
+        codigo = @codigo,
+        nombre = @nombre,
+        precio_compra = @precio_compra,
+        descripcion = @descripcion
+    WHERE id_producto = @id_producto
+
+    UPDATE VideoJuegos SET
+        fecha_lanzamiento = @fecha_lanzamiento,
+        plataforma = @plataforma
+    WHERE id_producto = @id_producto
+END
+
+
+
+
+--------------------------------------eliminar videojuego-----------------------------------------------------
+USE [DB_ELTORO]
+GO
+
+CREATE PROCEDURE EliminarVideoJuego
+    @dato VARCHAR(50)
+AS 
+BEGIN 
+    DELETE FROM videojuegos WHERE id_producto = @dato
+    DELETE FROM Producto WHERE id_producto = @dato
+END
 ---------------------------------------------------------------------------------------
 
-USE [DB_HotelMilenio]
-GO
-CREATE PROCEDURE RellenarEmpleado
-AS
-BEGIN
-     SELECT E.ID_Empleado, P.Nombre1
-	 FROM Persona P
-	 INNER JOIN Empleado E ON P.ID_Persona= E.ID_Persona;
-	 END
-
-	 exec RellenarEmpleado
 
 
